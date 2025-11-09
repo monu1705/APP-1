@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# GitHub Pages
+# Keep 404.html for GitHub Pages routing
+!404.html
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

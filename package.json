@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:github": "vite build",
+    "deploy": "npm run build:github"
   },
   "dependencies": {
     "react": "^19.2.0",
