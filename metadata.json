@@ -1,0 +1,5 @@
+{
+  "name": "M-track",
+  "description": "A sleek, mobile-first application for managing your monthly income and expenses. Track transactions, visualize your spending with charts, and manage your finances with ease.",
+  "requestFramePermissions": []
+}
