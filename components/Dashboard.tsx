@@ -15,15 +15,15 @@ const COLORS: { [key in PaymentMode]: string } = {
 };
 
 const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="p-3 bg-light-card/95 dark:bg-dark-card/95 backdrop-blur-md border border-light-border dark:border-dark-border rounded-lg shadow-xl glass">
-          <p className="font-bold text-light-text-primary dark:text-dark-text-primary text-sm">{`${payload[0].name}: ₹${payload[0].value.toFixed(2)}`}</p>
-          <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary mt-1">{`(${(payload[0].percent * 100).toFixed(0)}%)`}</p>
-        </div>
-      );
-    }
-    return null;
+  if (active && payload && payload.length) {
+    return (
+      <div className="p-3 bg-surface border border-border rounded-lg shadow-lg">
+        <p className="font-bold text-primary text-sm">{`${payload[0].name}: ₹${payload[0].value.toFixed(2)}`}</p>
+        <p className="text-xs text-secondary mt-1">{`(${(payload[0].percent * 100).toFixed(0)}%)`}</p>
+      </div>
+    );
+  }
+  return null;
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
@@ -47,7 +47,7 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
       .forEach(t => {
         expenseByMode[t.mode] = (expenseByMode[t.mode] || 0) + t.amount;
       });
-    
+
     return Object.entries(expenseByMode).map(([name, value]) => ({
       name: name as PaymentMode,
       value: value || 0,
@@ -55,27 +55,27 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
   }, [transactions]);
 
   return (
-    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 page-transition">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <div className="p-4 sm:p-5 rounded-xl bg-light-card dark:bg-dark-card shadow-md card-hover textured-card animate-fade-in" style={{animationDelay: '0.1s'}}>
-          <h3 className="text-xs sm:text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">Total Income</h3>
-          <p className="text-2xl sm:text-3xl font-bold text-secondary">₹{totalIncome.toFixed(2)}</p>
+    <div className="space-y-6 animate-fade-in">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-5 rounded-xl bg-surface border border-border shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-sm font-medium text-secondary mb-2">Total Income</h3>
+          <p className="text-2xl font-bold text-green-600">₹{totalIncome.toFixed(2)}</p>
         </div>
-        <div className="p-4 sm:p-5 rounded-xl bg-light-card dark:bg-dark-card shadow-md card-hover textured-card animate-fade-in" style={{animationDelay: '0.2s'}}>
-          <h3 className="text-xs sm:text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">Total Expense</h3>
-          <p className="text-2xl sm:text-3xl font-bold text-danger">₹{totalExpense.toFixed(2)}</p>
+        <div className="p-5 rounded-xl bg-surface border border-border shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-sm font-medium text-secondary mb-2">Total Expense</h3>
+          <p className="text-2xl font-bold text-red-600">₹{totalExpense.toFixed(2)}</p>
         </div>
-        <div className="p-4 sm:p-5 rounded-xl bg-light-card dark:bg-dark-card shadow-md card-hover textured-card animate-fade-in" style={{animationDelay: '0.3s'}}>
-          <h3 className="text-xs sm:text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">Balance</h3>
-          <p className={`text-2xl sm:text-3xl font-bold ${balance >= 0 ? 'text-light-text-primary dark:text-dark-text-primary' : 'text-danger'}`}>
+        <div className="p-5 rounded-xl bg-surface border border-border shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-sm font-medium text-secondary mb-2">Balance</h3>
+          <p className={`text-2xl font-bold ${balance >= 0 ? 'text-primary' : 'text-red-600'}`}>
             ₹{balance.toFixed(2)}
           </p>
         </div>
       </div>
 
       {expenseData.length > 0 && (
-        <div className="p-4 sm:p-5 rounded-xl bg-light-card dark:bg-dark-card shadow-md card-hover textured-card animate-fade-in" style={{animationDelay: '0.4s'}}>
-          <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-light-text-primary dark:text-dark-text-primary">Expense Distribution</h3>
+        <div className="p-6 rounded-xl bg-surface border border-border shadow-sm">
+          <h3 className="text-lg font-bold mb-4 text-primary">Expense Distribution</h3>
           <div className="w-full" style={{ height: '250px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -97,10 +97,10 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  iconType="circle" 
-                  wrapperStyle={{ fontSize: '11px' }}
-                  formatter={(value) => <span style={{ fontSize: '11px' }}>{value}</span>}
+                <Legend
+                  iconType="circle"
+                  wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }}
+                  formatter={(value) => <span style={{ color: 'var(--text-secondary)' }}>{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>

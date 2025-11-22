@@ -6,7 +6,7 @@
     <title>M-track</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -14,54 +14,20 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+              sans: ['Outfit', 'sans-serif'],
             },
             colors: {
-              'primary': '#4f46e5',
-              'primary-focus': '#4338ca',
-              'secondary': '#10b981',
-              'danger': '#ef4444',
-              'danger-focus': '#dc2626',
-              'light-bg': '#f8fafc',
-              'light-card': '#ffffff',
-              'light-text-primary': '#1e293b',
-              'light-text-secondary': '#64748b',
-              'light-border': '#e2e8f0',
-              'dark-bg': '#0f172a',
-              'dark-card': '#1e293b',
-              'dark-text-primary': '#f1f5f9',
-              'dark-text-secondary': '#94a3b8',
-              'dark-border': '#334155',
-            },
-            keyframes: {
-              'slide-up': {
-                '0%': { transform: 'translateY(20px)', opacity: '0' },
-                '100%': { transform: 'translateY(0)', opacity: '1' },
-              },
-              'slide-down': {
-                '0%': { transform: 'translateY(-20px)', opacity: '0' },
-                '100%': { transform: 'translateY(0)', opacity: '1' },
-              },
-              'fade-in': {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              'scale-in': {
-                '0%': { transform: 'scale(0.95)', opacity: '0' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
-              },
-              'spin': {
-                '0%': { transform: 'rotate(0deg)' },
-                '100%': { transform: 'rotate(360deg)' },
-              },
+              primary: 'var(--primary)',
+              'primary-dark': 'var(--primary-dark)',
+              secondary: 'var(--secondary)',
+              accent: 'var(--accent)',
+              'bg-light': 'var(--bg-light)',
+              'bg-dark': 'var(--bg-dark)',
             },
             animation: {
-              'slide-up': 'slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'slide-down': 'slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'fade-in': 'fade-in 0.2s ease-in-out forwards',
-              'scale-in': 'scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'spin': 'spin 1s linear infinite',
-            },
+              'float': 'float 6s ease-in-out infinite',
+              'pulse-glow': 'pulse-glow 3s infinite',
+            }
           }
         }
       }

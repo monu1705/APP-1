@@ -56,6 +56,7 @@ export const googleDriveService = {
             gapiReady = true;
             checkReady();
           } catch (error: any) {
+            console.error('GAPI init error:', error);
             reject(new Error(error.message || 'Failed to initialize Google API client'));
           }
         });
@@ -80,6 +81,7 @@ export const googleDriveService = {
               gapiReady = true;
               checkReady();
             } catch (error: any) {
+              console.error('GAPI init error (script load):', error);
               reject(new Error(error.message || 'Failed to initialize Google API client'));
             }
           });
@@ -141,24 +143,36 @@ export const googleDriveService = {
         scope: SCOPES,
         callback: async (tokenResponse: any) => {
           if (tokenResponse.error) {
+            console.error('Token client error:', tokenResponse);
             reject(new Error(tokenResponse.error));
             return;
           }
           try {
             if (window.gapi?.client) {
-              await window.gapi.client.setToken(tokenResponse);
+              // Ensure gapi client is initialized before setting token
+              if (!gapiLoaded) {
+                await googleDriveService.init();
+              }
+              window.gapi.client.setToken(tokenResponse);
             }
             resolve();
           } catch (error: any) {
+            console.error('Set token error:', error);
             reject(new Error(error.message || 'Failed to set token'));
           }
         },
       });
 
+      // Check if we already have a valid token
       const token = window.gapi?.client?.getToken();
       if (token === null || token === undefined) {
+        // Request consent if no token
         tokenClient.requestAccessToken({ prompt: 'consent' });
       } else {
+        // Skip prompt if we might have a token (though it might be expired, 
+        // usually we just request a new one without prompt if possible, 
+        // but 'consent' is safer for first time or re-auth)
+        // For better UX, let's try without prompt first, or just 'select_account'
         tokenClient.requestAccessToken({ prompt: '' });
       }
     });
@@ -171,10 +185,10 @@ export const googleDriveService = {
       if (token !== null && token !== undefined) {
         if (window.google?.accounts?.oauth2) {
           window.google.accounts.oauth2.revoke(token.access_token, () => {
-            window.gapi.client.setToken('');
+            window.gapi.client.setToken(null); // Use null instead of empty string
           });
         } else {
-          window.gapi.client.setToken('');
+          window.gapi.client.setToken(null);
         }
       }
     }
@@ -184,7 +198,9 @@ export const googleDriveService = {
   findFile: async (): Promise<GoogleDriveFile | null> => {
     try {
       if (!window.gapi?.client?.drive) {
-        throw new Error('Google Drive API not initialized');
+        // Try to load drive API if not present (should be loaded by init discoveryDocs)
+        if (!gapiLoaded) await googleDriveService.init();
+        if (!window.gapi?.client?.drive) throw new Error('Google Drive API not initialized');
       }
       const response = await window.gapi.client.drive.files.list({
         q: `name='${FILE_NAME}' and trashed=false`,
@@ -221,7 +237,7 @@ export const googleDriveService = {
       if (existingFile?.id) {
         // Update existing file
         const form = new FormData();
-        form.append('metadata', JSON.stringify({ name: FILE_NAME }));
+        form.append('metadata', new Blob([JSON.stringify({ name: FILE_NAME, mimeType: FILE_MIME_TYPE })], { type: 'application/json' }));
         form.append('file', blob);
 
         const response = await fetch(
@@ -236,15 +252,17 @@ export const googleDriveService = {
         );
 
         if (!response.ok) {
-          throw new Error(`Failed to update file: ${response.statusText}`);
+          const errorText = await response.text();
+          throw new Error(`Failed to update file: ${response.status} ${response.statusText} - ${errorText}`);
         }
       } else {
         // Create new file
         const form = new FormData();
-        form.append('metadata', JSON.stringify({ 
+        form.append('metadata', new Blob([JSON.stringify({
           name: FILE_NAME,
           parents: ['appDataFolder'],
-        }));
+          mimeType: FILE_MIME_TYPE
+        })], { type: 'application/json' }));
         form.append('file', blob);
 
         const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
@@ -256,7 +274,8 @@ export const googleDriveService = {
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to create file: ${response.statusText}`);
+          const errorText = await response.text();
+          throw new Error(`Failed to create file: ${response.status} ${response.statusText} - ${errorText}`);
         }
       }
     } catch (error: any) {
